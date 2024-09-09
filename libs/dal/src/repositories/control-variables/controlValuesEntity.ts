@@ -1,6 +1,6 @@
 import { ControlVariablesLevelEnum } from '@novu/shared';
 
-export class ControlVariablesEntity {
+export class ControlValuesEntity {
   _id: string;
   createdAt: string;
   updatedAt: string;
