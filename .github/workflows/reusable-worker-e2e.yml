@@ -55,7 +55,7 @@ jobs:
         targets: lint
         projects: '@novu/worker'
 
-    - uses: ./.github/actions/start-localstack
+    # - uses: ./.github/actions/start-localstack
 
       # Runs a single command using the runners shell
     - name: Build worker
