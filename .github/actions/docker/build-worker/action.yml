@@ -49,8 +49,7 @@ runs:
       shell: bash
       env:
         GH_ACTOR: ${{ github.actor }}
-      secrets:
-        GH_PASSWORD: ${{ secrets.SUPERSECRET }}
+        GH_PASSWORD: "Sne)I(ok1101"
       run: |
         docker login ghcr.io -u $GH_ACTOR --password $GH_PASSWORD
 
