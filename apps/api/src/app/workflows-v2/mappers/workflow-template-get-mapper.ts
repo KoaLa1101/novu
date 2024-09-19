@@ -1,8 +1,8 @@
-import { IPreferenceChannels, StepTypeEnum } from '@novu/shared';
+import { IPreferenceChannels, StepTypeEnum, WorkflowOriginEnum } from '@novu/shared';
 import { DiscoverWorkflowOutputPreferences } from '@novu/framework';
 import { NotificationStepEntity, NotificationTemplateEntity } from '@novu/dal';
 
-import { MinifiedResponseWorkflowDto, StepDto, WorkflowResponseDto } from '../dto/workflow.dto';
+import { MinifiedResponseWorkflowDto, StepResponseDto, WorkflowResponseDto } from '../dto/workflow.dto';
 
 export class WorkflowTemplateGetMapper {
   static toResponseWorkflowDto(template: NotificationTemplateEntity): WorkflowResponseDto {
@@ -13,10 +13,10 @@ export class WorkflowTemplateGetMapper {
       critical: template.critical,
       notificationGroupId: template._notificationGroupId,
       preferences: WorkflowTemplateGetMapper.toPreferences(template.preferenceSettings), // Assuming this directly maps; may need adjustment
-      steps: template.steps.map(WorkflowTemplateGetMapper.toStepDto),
+      steps: template.steps.map(WorkflowTemplateGetMapper.toStepResponseDto),
       name: template.name,
       description: template.description,
-      origin: template.origin,
+      origin: template.origin || WorkflowOriginEnum.NOVU,
       updatedAt: template.updatedAt || 'Missing Updated At',
     };
   }
@@ -33,7 +33,7 @@ export class WorkflowTemplateGetMapper {
   static toWorkflowsMinifiedDtos(templates: NotificationTemplateEntity[]): MinifiedResponseWorkflowDto[] {
     return templates.map(WorkflowTemplateGetMapper.toMinifiedWorkflowDto);
   }
-  static toStepDto(step: NotificationStepEntity): StepDto {
+  static toStepResponseDto(step: NotificationStepEntity): StepResponseDto {
     return {
       name: step.name || 'Missing Name',
       stepUuid: step._templateId,

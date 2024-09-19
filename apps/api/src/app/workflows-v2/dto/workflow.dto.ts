@@ -16,7 +16,7 @@ export type UpdateWorkflowDto = RequiredProp<Omit<WorkflowDto, '_id'>, 'origin'>
   steps: (StepResponseDto | StepDto)[];
 };
 
-export type WorkflowResponseDto = RequiredProp<WorkflowDto, 'origin'> & {
+export type WorkflowResponseDto = RequiredProp<Omit<WorkflowDto, 'steps'>, 'origin'> & {
   updatedAt: string;
   steps: StepResponseDto[];
 };
