@@ -1,5 +1,5 @@
 name: Build Worker Docker Image
-
+runs-on: self-hosted
 description: 'Builds a docker image for the Worker'
 
 inputs:
