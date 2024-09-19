@@ -64,7 +64,7 @@ export class FcmPushProvider implements IPushProvider {
 
     if (overridesData?.type === 'data') {
       delete (options.overrides as { type?: string })?.type;
-      res = await this.messaging.sendMulticast({
+      res = await this.messaging.sendEachForMulticast({
         tokens: options.target,
         data: { ...payload, title: options.title, body: options.content },
         ...(androidData ? { android: androidData } : {}),
@@ -75,7 +75,7 @@ export class FcmPushProvider implements IPushProvider {
     } else {
       const { data, ...overrides } = overridesData;
 
-      res = await this.messaging.sendMulticast({
+      res = await this.messaging.sendEachForMulticast({
         tokens: options.target,
         notification: {
           title: options.title,
