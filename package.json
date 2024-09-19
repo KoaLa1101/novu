@@ -42,7 +42,7 @@
     "build": "nx run-many --target=build --all",
     "prebuild": "nx run-many --target=prebuild --all",
     "build:api": "nx build @novu/api",
-    "build:worker": "nx build @novu/worker --skip-nx-cache --with-deps=false",
+    "build:worker": "nx build @novu/worker --skip-nx-cache",
     "build:ws": "nx build @novu/ws",
     "build:webhook": "nx build @novu/webhook",
     "build:inbound-mail": "nx build @novu/inbound-mail",
