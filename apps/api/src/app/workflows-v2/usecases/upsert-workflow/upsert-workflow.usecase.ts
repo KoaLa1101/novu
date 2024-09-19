@@ -12,6 +12,7 @@ import {
   NotificationStep,
   UpdateWorkflow,
   UpdateWorkflowCommand,
+  UpsertControlValuesCommand,
   UpsertControlValuesUseCase,
   UpsertPreferences,
   UpsertWorkflowPreferencesCommand,
@@ -72,8 +73,8 @@ export class UpsertWorkflowUseCase {
       UpsertControlValuesCommand.create({
         organizationId: command.user.organizationId,
         environmentId: command.user.environmentId,
+        notificationStepEntity: persistedStep,
         _workflowId: persistedWorkflow._id,
-        _stepId: persistedStep._templateId,
         newControlValues: stepInDto.controlValues || {},
         controlSchemas: stepInDto?.controls || { schema: {} },
       })
