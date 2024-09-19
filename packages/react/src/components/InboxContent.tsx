@@ -1,8 +1,10 @@
 import React from 'react';
 import type { NotificationClickHandler, NotificationActionClickHandler, InboxPage } from '@novu/js/ui';
-import { useRenderer } from '../context/RenderContext';
 import { Mounter } from './Mounter';
 import { NotificationsRenderer } from '../utils/types';
+import { useRenderer } from '../context/RendererContext';
+import { useNovuUI } from '../context/NovuUIContext';
+import { withRenderer } from './Renderer';
 
 export type InboxContentProps = {
   renderNotification?: NotificationsRenderer;
@@ -13,7 +15,7 @@ export type InboxContentProps = {
   hideNav?: boolean;
 };
 
-export const InboxContent = React.memo((props: InboxContentProps) => {
+const _InboxContent = React.memo((props: InboxContentProps) => {
   const {
     onNotificationClick,
     onPrimaryActionClick,
@@ -22,7 +24,8 @@ export const InboxContent = React.memo((props: InboxContentProps) => {
     initialPage,
     hideNav,
   } = props;
-  const { novuUI, mountElement } = useRenderer();
+  const { novuUI } = useNovuUI();
+  const { mountElement } = useRenderer();
 
   const mount = React.useCallback(
     (element: HTMLElement) => {
@@ -46,3 +49,5 @@ export const InboxContent = React.memo((props: InboxContentProps) => {
 
   return <Mounter mount={mount} />;
 });
+
+export const InboxContent = withRenderer(_InboxContent);
