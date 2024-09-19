@@ -11,12 +11,18 @@ class ControlsSchema {
 
 export type CreateWorkflowDto = Omit<WorkflowDto, '_id'>;
 
-export type UpdateWorkflowDto = RequiredProp<Omit<WorkflowDto, '_id'>, 'origin'>;
-
-export type WorkflowResponseDto = WorkflowDto & {
+export type UpdateWorkflowDto = RequiredProp<Omit<WorkflowDto, '_id'>, 'origin'> & {
   updatedAt: string;
+  steps: (StepResponseDto | StepDto)[];
 };
 
+export type WorkflowResponseDto = RequiredProp<WorkflowDto, 'origin'> & {
+  updatedAt: string;
+  steps: StepResponseDto[];
+};
+export type StepResponseDto = StepDto & {
+  stepUuid: string;
+};
 export type ListWorkflowResponse = {
   workflowSummaries: MinifiedResponseWorkflowDto[];
   totalResults: number;
@@ -30,9 +36,6 @@ export class StepDto {
   @IsString()
   @IsDefined()
   name: string;
-  @IsString()
-  @IsDefined()
-  stepUuid: string;
 
   @IsString()
   @IsDefined()

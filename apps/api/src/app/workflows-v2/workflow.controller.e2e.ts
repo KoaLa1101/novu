@@ -6,6 +6,8 @@ import {
   ListWorkflowResponse,
   MinifiedResponseWorkflowDto,
   StepDto,
+  StepResponseDto,
+  UpdateWorkflowDto,
   WorkflowDto,
   WorkflowResponseDto,
 } from './dto/workflow.dto';
@@ -18,6 +20,26 @@ const TEST_WORKFLOW_NAME = 'Test Workflow Name';
 const TEST_TAGS = ['test'];
 let session: UserSession;
 
+function addValueToExistingStep(workflowCreated: WorkflowDto & { updatedAt: string; steps: StepResponseDto[] }) {
+  const steps = workflowCreated.steps;
+  const updatedStep = steps[0];
+  updatedStep.name = 'Updated Step Name';
+  updatedStep.controlValues = { test: 'test' };
+  return steps;
+}
+
+function buildInAppStepWithValues() {
+  const stepDto = buildInAppStep();
+  stepDto.controlValues = { testNew: ['testNew'] };
+  return stepDto;
+}
+
+function buildUpdateDtoWithValues(workflowCreated: WorkflowResponseDto): UpdateWorkflowDto {
+  const steps = addValueToExistingStep(workflowCreated);
+  steps.push(buildInAppStepWithValues());
+  return { ...workflowCreated, name: TEST_WORKFLOW_UPDATED_NAME, steps };
+}
+
 describe('Workflow Controller E2E API Testing', () => {
   beforeEach(async () => {
     session = new UserSession();
@@ -26,7 +48,7 @@ describe('Workflow Controller E2E API Testing', () => {
   it('Smoke Testing', async () => {
     const workflowCreated = await createWorkflowAndValidate();
     await getWorkflowAndValidate(workflowCreated);
-    await updateWorkflowNameAndValidate({ ...workflowCreated, name: TEST_WORKFLOW_UPDATED_NAME });
+    await updateWorkflowNameAndValidate(workflowCreated._id, { ...workflowCreated, name: TEST_WORKFLOW_UPDATED_NAME });
     await getAllAndValidate({ searchQuery: PARTIAL_UPDATED_NAME, expectedTotalResults: 1, expectedArraySize: 1 });
     await deleteWorkflowAndValidateDeletion(workflowCreated._id);
   });
@@ -40,6 +62,15 @@ describe('Workflow Controller E2E API Testing', () => {
       expect(res.text).to.contain('Workflow with the same name already exists');
     });
   });
+  describe('Update Workflow Permutations', () => {
+    it('should update control values', async () => {
+      const nameSuffix = `Test Workflow${new Date().toString()}`;
+      const workflowCreated: WorkflowResponseDto = await createWorkflowAndValidate(nameSuffix);
+      let updateDtoWithValues = buildUpdateDtoWithValues(workflowCreated);
+      await updateWorkflowNameAndValidate(workflowCreated._id, updateDtoWithValues);
+    });
+  });
+
   describe('List Workflow Permutations', () => {
     it('should not return workflows with if not matching query', async () => {
       await createWorkflowAndValidate('XYZ');
@@ -185,19 +216,19 @@ function buildCreateWorkflowDto(nameSuffix: string): CreateWorkflowDto {
   };
 }
 
-function updateWorkflowRest(workflow: WorkflowDto & { updatedAt: string }): Promise<WorkflowResponseDto> {
-  return safePut(`${v2Prefix}/workflows/${workflow._id}`, workflow);
+function updateWorkflowRest(id: string, workflow: UpdateWorkflowDto): Promise<WorkflowResponseDto> {
+  return safePut(`${v2Prefix}/workflows/${id}`, workflow);
 }
 
-function convertToDate(updatedWorkflow: WorkflowDto & { updatedAt: string }) {
+function convertToDate(updatedWorkflow: UpdateWorkflowDto | WorkflowResponseDto) {
   const dateString = updatedWorkflow.updatedAt; // ISO 8601 format
   const timestamp = Date.parse(dateString);
 
   return new Date(timestamp);
 }
 
-async function updateWorkflowNameAndValidate(workflow: WorkflowResponseDto) {
-  const updatedWorkflow: WorkflowResponseDto = await updateWorkflowRest(workflow);
+async function updateWorkflowNameAndValidate(id: string, workflow: UpdateWorkflowDto) {
+  const updatedWorkflow: WorkflowResponseDto = await updateWorkflowRest(id, workflow);
   const updatedWorkflowWoUpdated = removeFields(updatedWorkflow, 'updatedAt');
   const originWithoutUpdatedAt = removeFields(workflow, 'updatedAt');
   expect(updatedWorkflowWoUpdated, 'workflow after update does not match as expected').to.deep.equal(

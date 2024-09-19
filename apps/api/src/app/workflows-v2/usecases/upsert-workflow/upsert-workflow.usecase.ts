@@ -65,7 +65,7 @@ export class UpsertWorkflowUseCase {
     const stepInDto = command.workflowDto?.steps.find((commandStepItem) => commandStepItem.name === persistedStep.name);
 
     if (!stepInDto) {
-      //should delete the values from the databasse?  or just ignore?
+      //should delete the values from the database?  or just ignore?
       return;
     }
 
