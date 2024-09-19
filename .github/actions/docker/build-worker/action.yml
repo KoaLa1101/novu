@@ -51,7 +51,7 @@ runs:
         GH_ACTOR: ${{ github.actor }}
         GH_PASSWORD: ${{ inputs.github_token }}
       run: |
-        echo $GH_PASSWORD | docker login ghcr.io -u $GH_ACTOR --password-stdin
+        docker login ghcr.io -u $GH_ACTOR --password $GH_PASSWORD
 
     - name: Set Bull MQ Env variable for EE
       shell: bash
